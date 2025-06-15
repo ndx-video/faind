@@ -2,8 +2,32 @@
 
 import { useState, useEffect } from 'react';
 
+interface SearchBlock {
+    id: number;
+    type: string;
+    label: string;
+    value: string;
+    placeholder: string;
+}
+
+interface SearchResult {
+    id: number;
+    name: string;
+    path: string;
+    size: string;
+    modified: string;
+    matches: number;
+}
+
+interface Preset {
+    id: number;
+    name: string;
+    blocks: number;
+    lastUsed: string;
+}
+
 export default function Page() {
-    const [searchBlocks, setSearchBlocks] = useState([
+    const [searchBlocks, setSearchBlocks] = useState<SearchBlock[]>([
         {
             id: 1,
             type: 'text',
@@ -13,8 +37,8 @@ export default function Page() {
         },
     ]);
     const [isSearching, setIsSearching] = useState(false);
-    const [searchResults, setSearchResults] = useState([]);
-    const [presets, setPresets] = useState([
+    const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+    const [presets, setPresets] = useState<Preset[]>([
         { id: 1, name: 'Recent Documents', blocks: 2, lastUsed: '2 hours ago' },
         { id: 2, name: 'Image Files', blocks: 3, lastUsed: '1 day ago' },
         { id: 3, name: 'Code Files', blocks: 4, lastUsed: '3 days ago' },
@@ -31,8 +55,8 @@ export default function Page() {
         { type: 'regex', label: 'Regex pattern', icon: '🔧' },
     ];
 
-    const addBlock = (type) => {
-        const newBlock = {
+    const addBlock = (type: string) => {
+        const newBlock: SearchBlock = {
             id: Date.now(),
             type: type,
             label: blockTypes.find((b) => b.type === type)?.label || 'Filter',
@@ -42,18 +66,18 @@ export default function Page() {
         setSearchBlocks([...searchBlocks, newBlock]);
     };
 
-    const removeBlock = (id) => {
+    const removeBlock = (id: number) => {
         setSearchBlocks(searchBlocks.filter((block) => block.id !== id));
     };
 
-    const updateBlock = (id, value) => {
+    const updateBlock = (id: number, value: string) => {
         setSearchBlocks(
             searchBlocks.map((block) => (block.id === id ? { ...block, value } : block)),
         );
     };
 
-    const getPlaceholder = (type) => {
-        const placeholders = {
+    const getPlaceholder = (type: string) => {
+        const placeholders: { [key: string]: string } = {
             text: 'Enter search text...',
             filetype: 'e.g., .pdf, .docx, .txt',
             folder: 'Select folder path...',
@@ -68,7 +92,7 @@ export default function Page() {
         setIsSearching(true);
         // Simulate search
         setTimeout(() => {
-            setSearchResults([
+            const results: SearchResult[] = [
                 {
                     id: 1,
                     name: 'project-notes.txt',
@@ -101,7 +125,8 @@ export default function Page() {
                     modified: '5 hours ago',
                     matches: 2,
                 },
-            ]);
+            ];
+            setSearchResults(results);
             setIsSearching(false);
         }, 1500);
     };
@@ -371,7 +396,7 @@ export default function Page() {
                                                     className="text-sm text-blue-700"
                                                     data-oid="-._9qyz"
                                                 >
-                                                    Try adding a "File type" filter to narrow down
+                                                    Try adding a &quot;File type&quot; filter to narrow down
                                                     your search results. Based on your query, you
                                                     might be looking for text documents.
                                                 </p>
