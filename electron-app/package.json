@@ -1,0 +1,105 @@
+{
+  "name": "faind-electron",
+  "version": "1.0.0",
+  "description": "Electron wrapper for fAInd - AI-powered file search application",
+  "main": "./dist/main.js",
+  "scripts": {
+    "start": "npx electron .",
+    "start-built": "npx electron ./dist/main.js",
+    "start-simple": "npx electron ./test-main.js",
+    "dev": "npm run build:electron && npx electron .",
+    "dev:electron": "vite build --watch --mode development && wait-on http://localhost:3000 && npx electron .",
+    "dev:next": "cd ../project-1749984823338 && npm run dev",
+    "build": "npm run build:next && npm run build:electron",
+    "build:electron": "vite build",
+    "build:next": "cd ../project-1749984823338 && npm run build",
+    "dist": "npm run build && electron-builder",
+    "pack": "electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "keywords": [
+    "electron",
+    "file-search",
+    "ai",
+    "desktop-app",
+    "typescript",
+    "vite"
+  ],
+  "author": "NDX Video",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "concurrently": "^8.2.2",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "electron-reload": "^2.0.0-alpha.1",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0",
+    "vite-plugin-electron": "^0.15.0",
+    "wait-on": "^7.2.0"
+  },
+  "dependencies": {
+    "electron-updater": "^6.1.7"
+  },
+  "build": {
+    "appId": "com.ndx.faind",
+    "productName": "fAInd",
+    "directories": {
+      "output": "release",
+      "buildResources": "assets"
+    },
+    "files": [
+      "dist/**/*",
+      "../project-1749984823338/.next/**/*",
+      "../project-1749984823338/public/**/*",
+      "!../project-1749984823338/node_modules",
+      "!../project-1749984823338/.next/cache"
+    ],
+    "extraResources": [
+      {
+        "from": "../project-1749984823338/.next/standalone",
+        "to": "app",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  }
+}

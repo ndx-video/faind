@@ -1,0 +1,22 @@
+{
+  "name": "faind",
+  "version": "1.0.0",
+  "description": "AI-powered file search application",
+  "scripts": {
+    "fix-markdown": "node fix-markdown.js",
+    "clean-backups": "find . -name '*.backup' -type f -delete 2>/dev/null || del /s *.backup 2>nul || echo 'No backup files found'"
+  },
+  "keywords": [
+    "file-search",
+    "ai",
+    "electron",
+    "nextjs",
+    "typescript"
+  ],
+  "author": "NDX Video",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ndx-video/faind.git"
+  }
+}
