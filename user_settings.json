@@ -1,0 +1,77 @@
+{
+  "app": {
+    "name": "fAInder",
+    "version": "1.0.0",
+    "description": "AI-powered file search desktop application"
+  },
+  "development": {
+    "reactDevServerPort": 5174,
+    "electronDevServerPort": 3000,
+    "enableDevTools": true,
+    "enableLogging": true
+  },
+  "window": {
+    "defaultWidth": 1200,
+    "defaultHeight": 800,
+    "minWidth": 800,
+    "minHeight": 600,
+    "titleBarStyle": "default"
+  },
+  "search": {
+    "maxFileSize": 104857600,
+    "searchTimeout": 30000,
+    "maxResults": 1000,
+    "defaultExcludePatterns": ["node_modules", ".git", ".DS_Store"],
+    "enableFileWatcher": true,
+    "autoIndex": true,
+    "showHiddenFiles": false
+  },
+  "ui": {
+    "defaultTheme": "system",
+    "enableAnimations": true,
+    "compactMode": false
+  },
+  "security": {
+    "nodeIntegration": false,
+    "contextIsolation": true,
+    "enableRemoteModule": false,
+    "webSecurityInProduction": true
+  },
+  "paths": {
+    "preloadScript": "preload.js",
+    "reactAppPaths": [
+      "../polymet-fainder/index.html",
+      "../polymet-fainder/index.html", 
+      "app/index.html",
+      "polymet-fainder/dist/index.html"
+    ]
+  },
+  "ipc": {
+    "channels": {
+      "readDirectory": "read-directory",
+      "searchFiles": "search-files",
+      "openFile": "open-file",
+      "showInFolder": "show-in-folder",
+      "selectDirectory": "select-directory",
+      "indexDirectory": "index-directory",
+      "getSearchIndex": "get-search-index",
+      "clearIndex": "clear-index",
+      "getAppVersion": "get-app-version",
+      "getAppPath": "get-app-path",
+      "minimize": "minimize",
+      "maximize": "maximize",
+      "close": "close",
+      "getPreferences": "get-preferences",
+      "setPreferences": "set-preferences",
+      "getWindowState": "get-window-state",
+      "onlookReadFile": "onlook-read-file",
+      "onlookWriteFile": "onlook-write-file"
+    }
+  },
+  "build": {
+    "outputDir": "dist",
+    "sourcemap": true,
+    "minify": false,
+    "target": "node18"
+  }
+}

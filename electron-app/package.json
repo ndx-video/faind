@@ -1,0 +1,91 @@
+{
+  "name": "fainder-desktop",
+  "version": "1.0.0",
+  "description": "fAInder - AI-powered file search desktop application",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "powershell -ExecutionPolicy Bypass -File start-dev.ps1",
+    "dev:simple": "$env:NODE_ENV=\"development\"; npx electron \"D:\\_PROJECTS\\NDX\\CODE\\faind\\electron-app\\simple-main.js\" --enable-logging",
+    "build": "npm run build:react && npm run build:electron",
+    "build:react": "cd ../polymet-fainder && npm run build",
+    "build:electron": "vite build",
+    "start": "npx electron .",
+    "start:dev": "npx electron . --enable-logging",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "clean": "rimraf dist",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
+  },
+  "keywords": [
+    "electron",
+    "file-search",
+    "ai",
+    "desktop",
+    "ripgrep",
+    "typescript"
+  ],
+  "author": {
+    "name": "fAInder Team",
+    "email": "info@fainder.app"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "electron-updater": "^6.1.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.8.0",
+    "eslint": "^8.54.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0",
+    "vite-plugin-electron": "^0.15.5"
+  },
+  "build": {
+    "appId": "com.fainder.desktop",
+    "productName": "fAInder",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "assets/**/*",
+      "!src/**/*",
+      "!scripts/**/*",
+      "!*.ts",
+      "!*.md"
+    ],
+    "extraResources": [
+      {
+        "from": "../polymet-fainder/dist",
+        "to": "app",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icons/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icons/icon.icns",
+      "category": "public.app-category.productivity"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icons/icon.png",
+      "category": "Utility"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

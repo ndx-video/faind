@@ -14,38 +14,43 @@ This guide provides AI agents with comprehensive technical details about the fAI
 
 ```
 faind/
-├── project-1749984823338/          # Onlook Next.js Application
-│   ├── app/                        # Next.js App Router structure
-│   │   ├── page.tsx               # Main search interface
-│   │   ├── layout.tsx             # Root layout component
-│   │   ├── globals.css            # Global styles
-│   │   └── favicon.ico            # App icon
-│   ├── lib/                       # Utility libraries
-│   │   └── utils.ts               # Shared utility functions
-│   ├── public/                    # Static assets
-│   │   └── images/                # Image assets
-│   ├── package.json               # Next.js dependencies
-│   ├── tsconfig.json              # TypeScript configuration
-│   ├── tailwind.config.ts         # Tailwind CSS configuration
-│   ├── next.config.mjs            # Next.js configuration
-│   └── components.json            # UI component configuration
-├── electron-app/                   # Electron Desktop Wrapper
-│   ├── src/                       # TypeScript source files
-│   │   ├── main.ts                # Main Electron process
-│   │   ├── preload.ts             # Secure renderer bridge
-│   │   ├── renderer.ts            # Renderer utilities
-│   │   └── types.ts               # Shared type definitions
-│   ├── scripts/                   # Development scripts
-│   │   └── dev.js                 # Development workflow helper
-│   ├── assets/                    # App icons and resources
-│   ├── vite.config.ts             # Vite build configuration
-│   ├── tsconfig.json              # TypeScript configuration
-│   ├── package.json               # Electron dependencies
-│   └── README.md                  # Electron-specific documentation
-├── .gitignore                     # Git ignore rules (optimized)
-├── ELECTRON_SETUP.md              # Electron implementation guide
-├── AGENTIC_GUIDE.md               # This file
-└── PROJECT_PLAN.md                # Project roadmap and milestones
+├── polymet-fainder/               # React Application (Vite-based)
+│   ├── src/                       # React components and logic
+│   │   ├── App.tsx               # Main application component
+│   │   ├── main.tsx              # React entry point
+│   │   ├── components/           # UI components (Radix UI)
+│   │   ├── polymet/              # Application-specific components
+│   │   │   ├── components/       # Search components
+│   │   │   ├── layouts/          # Layout components
+│   │   │   ├── pages/            # Page components
+│   │   │   └── data/             # Sample data and types
+│   │   ├── hooks/                # Custom React hooks
+│   │   ├── lib/                  # Utility libraries
+│   │   └── index.css             # Global styles
+│   ├── public/                   # Static assets
+│   ├── package.json              # React dependencies
+│   ├── vite.config.ts            # Vite configuration
+│   ├── tsconfig.json             # TypeScript configuration
+│   ├── tailwind.config.js        # Tailwind CSS configuration
+│   └── components.json           # UI component configuration
+├── electron-app/                  # Electron Desktop Wrapper
+│   ├── src/                      # TypeScript source files
+│   │   ├── main.ts               # Main Electron process
+│   │   ├── preload.ts            # Secure renderer bridge
+│   │   ├── renderer.ts           # Renderer utilities
+│   │   ├── types.ts              # Shared type definitions
+│   │   └── search/               # RipGrep integration
+│   ├── scripts/                  # Development scripts
+│   │   └── dev.js                # Development workflow helper
+│   ├── assets/                   # App icons and resources
+│   ├── vite.config.ts            # Vite build configuration
+│   ├── tsconfig.json             # TypeScript configuration
+│   ├── package.json              # Electron dependencies
+│   └── README.md                 # Electron-specific documentation
+├── .gitignore                    # Git ignore rules (optimized)
+├── ELECTRON_SETUP.md             # Electron implementation guide
+├── AGENTIC_GUIDE.md              # This file
+└── PROJECT_PLAN.md               # Project roadmap and milestones
 
 ```
 

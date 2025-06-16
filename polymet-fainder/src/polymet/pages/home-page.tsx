@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import SearchBar, { SearchOptions } from "@/polymet/components/search-bar";
 import FilterPanel, { FilterOptions } from "@/polymet/components/filter-panel";
 import ResultsList from "@/polymet/components/results-list";
@@ -11,6 +13,8 @@ import { SAMPLE_FILES, SAMPLE_PRESETS } from "@/polymet/data/sample-files";
 import { FileResult } from "@/polymet/components/result-card";
 import { PresetData } from "@/polymet/components/preset-card";
 import { SearchBlockData } from "@/polymet/components/search-block";
+import { useElectron } from "@/hooks/useElectron";
+import { isElectron, formatFileSize, formatDate, logger } from "@/lib/electron-utils";
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState("search");
@@ -18,28 +22,81 @@ export default function HomePage() {
   const [isSearching, setIsSearching] = useState(false);
   const [presets, setPresets] = useState<PresetData[]>(SAMPLE_PRESETS);
   const [searchBlocks, setSearchBlocks] = useState<SearchBlockData[]>([]);
+  const [selectedDirectory, setSelectedDirectory] = useState<string>("");
 
-  const handleSearch = (query: string, options: SearchOptions) => {
+  // Electron integration
+  const {
+    isElectron: electronAvailable,
+    searchFiles,
+    selectDirectory,
+    openFile,
+    showInFolder,
+    appVersion
+  } = useElectron();
+
+  useEffect(() => {
+    logger.info('HomePage mounted', {
+      electronAvailable,
+      appVersion,
+      environment: isElectron() ? 'electron' : 'web'
+    });
+  }, [electronAvailable, appVersion]);
+
+  const handleSearch = async (query: string, options: SearchOptions) => {
     setIsSearching(true);
+    logger.debug('Starting search', { query, options, electronAvailable });
 
-    // Simulate search delay
-    setTimeout(() => {
-      // Simple filtering logic for demo purposes
-      let results = [...SAMPLE_FILES];
+    try {
+      if (electronAvailable && searchFiles) {
+        // Use Electron search API
+        const searchQuery = {
+          text: query,
+          fileTypes: options.fileTypes || [],
+          directories: selectedDirectory ? [selectedDirectory] : [],
+          caseSensitive: options.caseSensitive || false,
+          maxResults: 1000
+        };
 
-      if (query) {
-        results = results.filter(
-          (file) =>
-            file.name.toLowerCase().includes(query.toLowerCase()) ||
-            file.path.toLowerCase().includes(query.toLowerCase()) ||
-            file.type.toLowerCase().includes(query.toLowerCase())
-        );
+        const electronResults = await searchFiles(searchQuery);
+
+        // Convert Electron results to FileResult format
+        const convertedResults: FileResult[] = electronResults.map(result => ({
+          id: parseInt(result.id) || Math.random(),
+          name: result.name,
+          path: result.path,
+          size: formatFileSize(result.size),
+          modified: result.modified,
+          type: result.extension || result.type,
+          matches: result.matches?.map(m => m.text) || []
+        }));
+
+        setSearchResults(convertedResults);
+        logger.info('Electron search completed', { resultCount: convertedResults.length });
+      } else {
+        // Fallback to mock data for web or when Electron API unavailable
+        let results = [...SAMPLE_FILES];
+
+        if (query) {
+          results = results.filter(
+            (file) =>
+              file.name.toLowerCase().includes(query.toLowerCase()) ||
+              file.path.toLowerCase().includes(query.toLowerCase()) ||
+              file.type.toLowerCase().includes(query.toLowerCase())
+          );
+        }
+
+        setSearchResults(results);
+        logger.info('Mock search completed', { resultCount: results.length });
       }
 
-      setSearchResults(results);
-      setIsSearching(false);
       setActiveTab("results");
-    }, 800);
+    } catch (error) {
+      logger.error('Search failed', error);
+      // Fallback to empty results on error
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   const handleFilterChange = (filters: FilterOptions) => {
@@ -207,13 +264,98 @@ export default function HomePage() {
     }, 800);
   };
 
+  // Handle directory selection
+  const handleSelectDirectory = async () => {
+    if (!electronAvailable || !selectDirectory) {
+      logger.warn('Directory selection not available - Electron API missing');
+      return;
+    }
+
+    try {
+      const directory = await selectDirectory();
+      if (directory) {
+        setSelectedDirectory(directory);
+        logger.info('Directory selected', { directory });
+      }
+    } catch (error) {
+      logger.error('Failed to select directory', error);
+    }
+  };
+
+  // Handle file operations
+  const handleFileSelect = async (file: FileResult) => {
+    logger.debug('File selected', { file });
+
+    if (electronAvailable && openFile) {
+      try {
+        await openFile(file.path);
+        logger.info('File opened', { path: file.path });
+      } catch (error) {
+        logger.error('Failed to open file', error);
+      }
+    } else {
+      logger.info('File selected (web mode)', { file });
+    }
+  };
+
+  const handleFilePreview = async (file: FileResult) => {
+    logger.debug('File preview requested', { file });
+
+    if (electronAvailable && showInFolder) {
+      try {
+        await showInFolder(file.path);
+        logger.info('File shown in folder', { path: file.path });
+      } catch (error) {
+        logger.error('Failed to show file in folder', error);
+      }
+    } else {
+      logger.info('File preview (web mode)', { file });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">File Search</h1>
-        <p className="text-muted-foreground">
-          Search for files across your system using powerful search tools.
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">File Search</h1>
+            <p className="text-muted-foreground">
+              Search for files across your system using powerful search tools.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {electronAvailable && (
+              <Badge variant="secondary" className="text-xs">
+                Desktop v{appVersion}
+              </Badge>
+            )}
+            {!electronAvailable && (
+              <Badge variant="outline" className="text-xs">
+                Web Mode
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        {electronAvailable && (
+          <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+            <div className="flex-1">
+              {selectedDirectory ? (
+                <div>
+                  <p className="text-sm font-medium">Search Directory:</p>
+                  <p className="text-sm text-muted-foreground truncate">{selectedDirectory}</p>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No directory selected - searches will use default locations
+                </p>
+              )}
+            </div>
+            <Button onClick={handleSelectDirectory} variant="outline" size="sm">
+              Select Directory
+            </Button>
+          </div>
+        )}
       </div>
 
       <Tabs
@@ -273,8 +415,8 @@ export default function HomePage() {
         <TabsContent value="results" className="space-y-4">
           <ResultsList
             results={searchResults}
-            onSelect={(file) => console.log("Selected file:", file)}
-            onPreview={(file) => console.log("Preview file:", file)}
+            onSelect={handleFileSelect}
+            onPreview={handleFilePreview}
             isLoading={isSearching}
           />
         </TabsContent>
